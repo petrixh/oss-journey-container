@@ -92,6 +92,7 @@ runners. It runs `test/test.sh` on each and publishes a multi-arch image to
 | --- | --- |
 | Pull request to `main` | `pr-<number>`, `sha-<head commit>` |
 | Push to `main` | `latest`, `sha-<commit>` |
+| Manual run on another branch | `<branch name>`, `sha-<commit>` |
 
 PRs from forks are built and tested, but not published.
 
@@ -105,5 +106,15 @@ Use it in a project's `.devcontainer/devcontainer.json`:
 ] } }
 ```
 
-Dependabot keeps the base image digest and the GitHub Actions up to date. The JBR and extension
-versions (`JBR_VERSION`, `JBR_BUILD`, `VAADIN_VSCODE_VERSION`) have to be updated by hand.
+## Keeping it up to date
+
+- **Dependabot** updates the base image digest and the GitHub Actions.
+- The **[Update versions](.github/workflows/update-versions.yml)** workflow runs every Monday (or
+  manually). It runs [`scripts/update-versions.sh`](scripts/update-versions.sh), which bumps
+  `JBR_VERSION`/`JBR_BUILD` to the release the extension would pick and `VAADIN_VSCODE_VERSION` to
+  the latest version on open-vsx. If anything changed, it opens or updates a PR from
+  `deps/jbr-and-extension`. PRs opened by Actions don't trigger other workflows, so it starts the
+  Image workflow on that branch itself, which publishes `:deps-jbr-and-extension`.
+
+  This needs **Settings → Actions → General → Allow GitHub Actions to create and approve pull
+  requests** to be enabled.

@@ -2,6 +2,8 @@ name: Image
 
 # PRs to main publish ghcr.io/<repo>:pr-<number> (and sha-<commit>) for testing,
 # pushes to main publish :latest (and sha-<commit>). Both for amd64 and arm64.
+# Manual runs on another branch (e.g. started by the Update versions workflow)
+# publish :<branch name> (and sha-<commit>).
 on:
   pull_request:
     branches: [main]
@@ -113,6 +115,7 @@ jobs:
           images: ${{ env.IMAGE }}
           tags: |
             type=ref,event=pr
+            type=ref,event=branch,enable=${{ github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main' }}
             type=sha
             type=raw,value=latest,enable={{is_default_branch}}
 
