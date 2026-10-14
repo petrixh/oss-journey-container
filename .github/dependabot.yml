@@ -1,0 +1,19 @@
+version: 2
+updates:
+  # Base image digest in the Dockerfile (Microsoft republishes 3-25-trixie regularly)
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
