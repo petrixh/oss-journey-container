@@ -1,0 +1,65 @@
+name: Update versions
+
+# Dependabot can't see the JetBrains Runtime and Vaadin extension versions
+# pinned in the Dockerfile, so this opens a PR when they are out of date.
+on:
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      BRANCH: deps/jbr-and-extension
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check for new versions
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          changes="$(scripts/update-versions.sh)"
+          if [ -z "$changes" ]; then
+            echo "Everything is up to date" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "$changes" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo "changes<<EOF"
+            echo "$changes"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create or update PR
+        id: pr
+        if: steps.check.outputs.changes != ''
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: ${{ env.BRANCH }}
+          commit-message: "deps: update JetBrains Runtime / Vaadin extension versions"
+          title: "deps: update JetBrains Runtime / Vaadin extension versions"
+          body: |
+            ${{ steps.check.outputs.changes }}
+
+            Opened by the [Update versions](${{ github.server_url }}/${{ github.repository }}/actions/workflows/update-versions.yml) workflow.
+          delete-branch: true
+
+      # PRs opened with GITHUB_TOKEN don't trigger other workflows, so start
+      # the image build and tests on the PR branch explicitly
+      - name: Build and test the image
+        if: steps.pr.outputs.pull-request-operation == 'created' || steps.pr.outputs.pull-request-operation == 'updated'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run image.yml --ref "$BRANCH"
