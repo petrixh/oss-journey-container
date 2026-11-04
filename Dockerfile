@@ -9,7 +9,7 @@
 #   ~/.vaadin/jdk/<jbrsdk tarball name>/        - JetBrains Runtime (DCEVM)
 
 # Pinned by digest so Dependabot opens a PR when the tag is republished
-FROM mcr.microsoft.com/devcontainers/java:3-25-trixie@sha256:da82e11bce1d8c01f36e1dc559f1aadaa28fcbd3e1356fd0bd9fa100f5b3d75d
+FROM mcr.microsoft.com/devcontainers/java:3-25-trixie@sha256:ba69d01f9f399529047736a1fe541ea1c7e783be726c362be2b91d4e125d928a
 
 # JetBrains Runtime release, see https://github.com/JetBrains/JetBrainsRuntime/releases
 # Keep this at the release the extension considers "latest": its fallback setup
