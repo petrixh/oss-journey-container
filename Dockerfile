@@ -17,8 +17,8 @@ FROM mcr.microsoft.com/devcontainers/java:3-25-trixie@sha256:da82e11bce1d8c01f36
 # missing. Note it picks the last non-prerelease tag in *string* order (from the
 # first page of the API), not the newest one: e.g. jbr-release-25.0.4b508.27
 # sorts after jbr-release-25.0.4.1b635.72. test/test.sh reports a mismatch.
-ARG JBR_VERSION=25.0.4
-ARG JBR_BUILD=b508.27
+ARG JBR_VERSION=25.0.5.1
+ARG JBR_BUILD=b635.102
 # Vaadin VS Code extension version whose bundled hotswap-agent.jar is installed.
 ARG VAADIN_VSCODE_VERSION=1.1.8
 ARG USERNAME=vscode
